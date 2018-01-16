@@ -32,7 +32,7 @@ SOURCES += \
 
 HEADERS  += \
     qt-wrapper/device_emulator.hpp \
-    mali-gui/fonts/bebas_neue_bold_17.hpp \
+    mali-gui/fonts/autogen.h \
     mali-gui/Button.hpp \
     mali-gui/Device.hpp \
     mali-gui/Layout.hpp \
@@ -42,4 +42,6 @@ HEADERS  += \
     mali-gui/Stacker.hpp \
     mali-gui/MemoryDevice.hpp \
     mali-gui/Widget.hpp \
-    mali-gui/Alignment.hpp
+    mali-gui/Alignment.hpp \
+    mali-gui/Font.hpp
+
