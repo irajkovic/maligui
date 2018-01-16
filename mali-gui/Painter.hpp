@@ -4,8 +4,9 @@
 #include "Point.hpp"
 #include "Rectangle.hpp"
 #include "Device.hpp"
+#include "Font.hpp"
 
-#include "fonts/bebas_neue_bold_17.hpp"
+#include "mali-gui/fonts/autogen.h"
 
 namespace maligui
 {
@@ -22,8 +23,10 @@ public:
     Painter(std::shared_ptr<Device<TPixel, TSize>> surface,
             Rectangle<TSize> geometry)
         : mDevice(surface),
-          mGeometry(geometry)
+          mGeometry(geometry),
+          mFont(nullptr)
     {
+        setFont("", 0); // Use the default font
     }
 
     inline void color(TPixel color)
@@ -38,6 +41,10 @@ public:
 
     inline void point(TSize x, TSize y) {
         mDevice->setXY(x, y, mColor);
+    }
+
+    inline void point(TSize x, TSize y, TPixel color) {
+        mDevice->setXY(x, y, color);
     }
 
     /**
@@ -95,14 +102,31 @@ public:
         line(rect.x + rect.width - 1, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
     }
 
+    inline bool setFont(const std::string& name, int size)
+    {
+        mFont = &_FONTS_[0];
+
+        for (const auto &font : _FONTS_) {
+            if (font.name() == name && font.size() == size) {
+                mFont = &font;
+                break;
+            }
+        }
+
+        return true;
+    }
+
     inline int writeWidth(const std::string &text)
     {
         int width = 0;
 
-        for (auto ch : text) {
-            char ind = ch - 32;
-            int *geometry = bebas_neue_bold_17_map[ind];
-            width += geometry[FONT_WIDTH] + 2;
+        if (mFont == nullptr) {
+            return 0;
+        }
+
+        for (const auto &ch : text) {
+            Character c = mFont->character(ch);
+            width += c.width();
         }
 
         return width;
@@ -132,49 +156,59 @@ public:
     {
         TSize y = 0;
 
+        if (mFont == nullptr) {
+            return 0;
+        }
+
         switch(verticalAlign) {
         case align::Vertical::TOP:
             y = mGeometry.y;
             break;
         case align::Vertical::CENTER:
-            y = mGeometry.y + (mGeometry.height - FONT_HEIGHT) / 2;
+            y = mGeometry.y + (mGeometry.height - mFont->height()) / 2;
             break;
         case align::Vertical::BOTTOM:
-            y = mGeometry.y + mGeometry.height - FONT_HEIGHT;
+            y = mGeometry.y + mGeometry.height - mFont->height();
             break;
         }
 
         return y;
     }
 
-
     inline void write(const std::string &text,
                       align::Horizontal horizontalAlign = align::Horizontal::CENTER,
                       align::Vertical verticalAlign = align::Vertical::CENTER)
     {
-
         TSize destX = getHorizontalyAlignedPosition(text, horizontalAlign);
         TSize destY = getVerticalyAlignedPosition(verticalAlign);
 
+        if (mFont == nullptr) {
+            return;
+        }
+
         for (const auto &ch : text) {
-            char ind = ch - 32;
-            int *geometry = bebas_neue_bold_17_map[ind];
+            Character character = mFont->character(ch);
+            int width = character.width();
+            int x = 0;
+            int y = 0;
 
-            int x = geometry[FONT_X];
-            int y = geometry[FONT_Y];
-            int w = geometry[FONT_WIDTH];
-            int h = geometry[FONT_HEIGHT];
+            for (const auto& pixval : character) {
 
-            for (int j = 0; j < h ; ++j) {
-                for (int i = 0; i < w ; ++i) {
-                    bool set = bebas_neue_bold_17_xpm[j+y][i+x] == '.';
-                    if (set) {
-                        point(destX + i, destY + j);
-                    }
+                // TODO :: Create TPixel color based on pixval value
+                if (pixval > 100) {
+                    point(destX + x, destY + y);
+                }
+
+                if (x < width - 1) {
+                    ++x;
+                }
+                else {
+                    x = 0;
+                    ++y;
                 }
             }
 
-            destX += w + 2;
+            destX += width;
         }
     }
 
@@ -184,6 +218,7 @@ private:
     std::shared_ptr<Device<TPixel, TSize>> mDevice;
     Rectangle<TSize> mGeometry;
     TPixel mColor;
+    const Font *mFont;
 };
 
 } /* namespace maligui */
