@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
         "1", "2", "3", "+",
         "4", "5", "6", "-",
         "7", "8", "9", "*",
-        "0", "DEL", "=", "/"
+        "0", "C", "=", "/"
     };
 
     // Now create a numpad button maligui::Widget for each label
