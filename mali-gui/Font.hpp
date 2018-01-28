@@ -53,9 +53,22 @@ public:
     {
     }
 
-    inline Character character(char ch) const
+    /**
+     * @brief character provides access to the font characters.
+     * @param ch ASCII code for the character.
+     * @retval character object for the asked character, if found in font.
+     * @retval empty character object, if not found.
+     */
+    inline Character character(uint8_t ch) const
     {
-        return mCharacters.at(ch - mFrom);
+        if (ch >= mFrom) {
+            uint8_t ind = ch - mFrom;
+            if (ind < mCharacters.size()) {
+                return mCharacters.at(ind);
+            }
+        }
+
+        return Character(0, {});
     }
 
     inline int height() const
@@ -77,8 +90,8 @@ private:
     std::string mName;
     int mSize;
     int mHeight;
-    int mFrom;
-    int mTo;
+    uint8_t mFrom;
+    uint8_t mTo;
     std::vector<Character> mCharacters;
 
 };
