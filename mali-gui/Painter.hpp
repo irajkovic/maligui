@@ -5,8 +5,7 @@
 #include "Rectangle.hpp"
 #include "Device.hpp"
 #include "Font.hpp"
-
-#include "mali-gui/fonts/autogen.h"
+#include "FontDatabase.hpp"
 
 namespace maligui
 {
@@ -26,7 +25,7 @@ public:
           mGeometry(geometry),
           mFont(nullptr)
     {
-        setFont("", 0); // Use the default font
+        mFont = FontDatabase::get();
     }
 
     inline void color(TPixel color)
@@ -102,20 +101,6 @@ public:
         line(rect.x + rect.width - 1, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
     }
 
-    inline bool setFont(const std::string& name, int size)
-    {
-        mFont = &_FONTS_[0];
-
-        for (const auto &font : _FONTS_) {
-            if (font.name() == name && font.size() == size) {
-                mFont = &font;
-                break;
-            }
-        }
-
-        return true;
-    }
-
     inline int writeWidth(const std::string &text)
     {
         int width = 0;
@@ -175,13 +160,37 @@ public:
         return y;
     }
 
+    void setFont(const Font * font)
+    {
+        mFont = font;
+    }
+
+    /**
+     * @brief write Renders the given string with used font.
+     * @param text
+     * @param horizontalAlign
+     * @param verticalAlign
+     */
     inline void write(const std::string &text,
                       align::Horizontal horizontalAlign = align::Horizontal::CENTER,
-                      align::Vertical verticalAlign = align::Vertical::CENTER)
+                      align::Vertical verticalAlign = align::Vertical::CENTER,
+                      const Font *font = nullptr)
     {
+        if (font) {
+            mFont = font;
+        }
+
         TSize destX = getHorizontalyAlignedPosition(text, horizontalAlign);
         TSize destY = getVerticalyAlignedPosition(verticalAlign);
 
+        renderText(text, destX, destY);
+    }
+
+    inline Device<TPixel, TSize>* device() { return &mDevice; }
+
+private:
+
+    void renderText(const std::string &text, TSize destX, TSize destY) {
         if (mFont == nullptr) {
             return;
         }
@@ -194,10 +203,7 @@ public:
 
             for (const auto& pixval : character) {
 
-                // TODO :: Create TPixel color based on pixval value
-                if (pixval > 100) {
-                    point(destX + x, destY + y);
-                }
+                mDevice->setXYBlended(destX + x, destY + y, mColor, pixval);
 
                 if (x < width - 1) {
                     ++x;
@@ -212,9 +218,6 @@ public:
         }
     }
 
-    inline Device<TPixel, TSize>* device() { return &mDevice; }
-
-private:
     std::shared_ptr<Device<TPixel, TSize>> mDevice;
     Rectangle<TSize> mGeometry;
     TPixel mColor;

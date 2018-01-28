@@ -5,6 +5,7 @@
 #include "mali-gui/Stacker.hpp"
 #include "mali-gui/Button.hpp"
 #include "mali-gui/Layout.hpp"
+#include "mali-gui/FontDatabase.hpp"
 #include "qt-wrapper/device_emulator.hpp"
 
 int applyOperation(int arg1, int arg2, char operation)
@@ -91,7 +92,9 @@ int main(int argc, char *argv[])
     auto display = std::make_unique<maligui::Button<QColor>>();
     display->geometry(maligui::Rectangle<int>{10, 20, stacker.width() - 20, 40});
     display->backgroundColor(QColor(Qt::yellow));
+    display->foregroundColor(Qt::black);
     display->horizontalAlign(maligui::align::Horizontal::RIGHT);
+    display->setFont("Century Schoolbook L", 24);
     display->text("0");
 
     // On click handler for numpad buttons. Make sure it is defined *before*
@@ -125,6 +128,7 @@ int main(int argc, char *argv[])
         button->backgroundColor(QColor("#555555"));
         button->foregroundColor(QColor("#CCCCCC"));
         button->onClickHandler(numpadBtnClickHandler);
+        button->setFont("Consolas", 18);
         numpad->addChild(std::move(button));
     }
 

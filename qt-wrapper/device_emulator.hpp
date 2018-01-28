@@ -28,7 +28,7 @@ public:
         mPixmap(w, h),
         mPainter(&mPixmap)
     {
-        setGeometry(0, 0, w, h);
+        setFixedSize(w, h);
         show();
     }
 
@@ -44,6 +44,19 @@ public:
         mPainter.setPen(color);
         mPainter.drawPoint(x, y);
         update();
+    }
+
+    void setXYBlended(int x, int y, QColor color, uint8_t intensity) override
+    {
+        color.setAlpha(intensity);
+        mPainter.setPen(color);
+        mPainter.drawPoint(x, y);
+        update();
+    }
+
+    QColor getXY(int x, int y) override
+    {
+        return mPixmap.toImage().pixelColor(x, y);  // TMP
     }
 
     QColor get(int offset) const override {

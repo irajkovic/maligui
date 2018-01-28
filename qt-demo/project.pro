@@ -43,5 +43,5 @@ HEADERS  += \
     mali-gui/MemoryDevice.hpp \
     mali-gui/Widget.hpp \
     mali-gui/Alignment.hpp \
-    mali-gui/Font.hpp
-
+    mali-gui/Font.hpp \
+    mali-gui/FontDatabase.hpp

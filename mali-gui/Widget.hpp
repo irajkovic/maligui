@@ -134,6 +134,11 @@ public:
         mId = id;
     }
 
+    virtual Painter<TPixel>* getPainter()
+    {
+        return mPainter.get();
+    }
+
 protected:
     //Painter<TPixel> &painter;
     unsigned int mId;

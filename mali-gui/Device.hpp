@@ -76,6 +76,10 @@ public:
 
     inline virtual void setXY(TSize x, TSize y, TPixel t) = 0;
 
+    inline virtual void setXYBlended(TSize x, TSize y, TPixel color, uint8_t intensity) = 0;
+
+    inline virtual TPixel getXY(TSize x, TSize y) = 0;
+
     inline virtual TPixel get(TSize offset) const = 0;
 
     inline void registerEventHandler(EventHandler handler)

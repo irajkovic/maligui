@@ -1,11 +1,11 @@
 #pragma once
 
+#include <QColor>
+
 #include "Alignment.hpp"
 #include "Painter.hpp"
 #include "Widget.hpp"
-
-#include <QColor>
-#include <QDebug>
+#include "FontDatabase.hpp"
 
 namespace maligui
 {
@@ -35,6 +35,7 @@ public:
             this->mPainter->fill(mBackgroundColor);
             this->mPainter->color(mForegroundColor);
             this->mPainter->rect(this->mGeometry);
+            this->mPainter->setFont(mFont);
             this->mPainter->write(mText.c_str(),
                                   mHorizontalAlign,
                                   mVerticalAlign);
@@ -80,12 +81,18 @@ public:
     virtual void text(const std::string &text)
     {
         this->mText = text;
+
         onPaint();
     }
 
     const std::string& text()
     {
         return this->mText;
+    }
+
+    void setFont(const std::string& name, int size)
+    {
+        mFont = FontDatabase::get(name, size);
     }
 
     void horizontalAlign(align::Horizontal align)
@@ -104,6 +111,7 @@ private:
     TPixel mForegroundColor;
     TPixel mBorderColor;
     std::string mText;
+    const Font * mFont = nullptr;
     align::Horizontal mHorizontalAlign = align::Horizontal::CENTER;
     align::Vertical mVerticalAlign = align::Vertical::CENTER;
 };
