@@ -26,6 +26,10 @@ void makeGrid(Widget<TPixel, TSize>* container,
               TSize paddingVer = 0
         )
 {
+    if (numHor < 1 || numVer < 1) {
+        return;
+    }
+
     Rectangle<TSize> geometry = container->geometry();
 
     TSize stepHor = (geometry.width - paddingHor * (numHor - 1)) / numHor;
