@@ -1,4 +1,3 @@
-
 #include <stack>
 #include <functional>
 
@@ -9,7 +8,7 @@
 namespace maligui
 {
 
-template <typename TPixel, typename TSize = int>
+template<typename TPixel, typename TSize = int>
 /**
  * @brief The Stacker class provides basic functionality needed to transition
  * between the independent widgets. It is also a single way to communicate to
@@ -25,46 +24,48 @@ template <typename TPixel, typename TSize = int>
 class Stacker
 {
 public:
-    Stacker(std::shared_ptr<Device<TPixel>> device) : mDevice(device)
-    {
-        device->registerEventHandler(std::bind(&Stacker::onClick, this, std::placeholders::_1));
-    }
+	Stacker(std::shared_ptr<Device<TPixel>> device) :
+		mDevice(device)
+	{
+		device->registerEventHandler(std::bind(&Stacker::onClick, this,
+		                                       std::placeholders::_1));
+	}
 
-    void push(Widget<TPixel, TSize> *widget)
-    {
-        mStack.push(widget);
-        widget->initPainter(mDevice);
-        widget->onPaint();
-    }
+	void push (Widget<TPixel, TSize> *widget)
+	{
+		mStack.push(widget);
+		widget->initPainter(mDevice);
+		widget->onPaint();
+	}
 
-    void refresh()
-    {
-        mStack.top()->onPaint();
-    }
+	void refresh ()
+	{
+		mStack.top()->onPaint();
+	}
 
-    void onClick(Point<TSize> point)
-    {
-        mStack.top()->propagateClick(point);
-    }
+	void onClick (Point<TSize> point)
+	{
+		mStack.top()->propagateClick(point);
+	}
 
-    inline TSize width() const
-    {
-        return mDevice->width();
-    }
+	inline TSize width () const
+	{
+		return mDevice->width();
+	}
 
-    inline TSize height() const
-    {
-        return mDevice->height();
-    }
+	inline TSize height () const
+	{
+		return mDevice->height();
+	}
 
-    inline TSize size() const
-    {
-        return mDevice->size();
-    }
+	inline TSize size () const
+	{
+		return mDevice->size();
+	}
 
 private:
-    std::stack<Widget<TPixel, TSize>*> mStack;
-    std::shared_ptr<Device<TPixel>> mDevice;
+	std::stack<Widget<TPixel, TSize> *> mStack;
+	std::shared_ptr<Device<TPixel>> mDevice;
 };
 
 } /* namespace maligui */

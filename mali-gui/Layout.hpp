@@ -6,7 +6,7 @@
 namespace maligui
 {
 
-template <typename TPixel, typename TSize = int>
+template<typename TPixel, typename TSize = int>
 /**
  * @brief Arranges children widgets of the container into the grid.
  * Widgets will be added left to right, top to bottom. Once all child widgets
@@ -19,47 +19,48 @@ template <typename TPixel, typename TSize = int>
  * @param paddingHor    Horizontal padding, in pixels.
  * @param paddingVer    Vertical padding, in pixels.
  */
-void makeGrid(Widget<TPixel, TSize>* container,
-              int numHor = 0,
-              int numVer = 0,
-              TSize paddingHor = 0,
-              TSize paddingVer = 0
-        )
+void makeGrid (Widget<TPixel, TSize> *container,
+               int numHor = 0,
+               int numVer = 0,
+               TSize paddingHor = 0,
+               TSize paddingVer = 0
+               )
 {
-    if (numHor < 1 || numVer < 1) {
-        return;
-    }
+	if (numHor < 1 || numVer < 1) {
+		return;
+	}
 
-    Rectangle<TSize> geometry = container->geometry();
+	Rectangle<TSize> geometry = container->geometry();
 
-    TSize stepHor = (geometry.width - paddingHor * (numHor - 1)) / numHor;
-    TSize stepVer = (geometry.height - paddingVer * (numVer - 1)) / numVer;
-    TSize curY = geometry.y;
+	TSize stepHor = (geometry.width - paddingHor * (numHor - 1)) / numHor;
+	TSize stepVer = (geometry.height - paddingVer * (numVer - 1)) / numVer;
+	TSize curY    = geometry.y;
 
-    size_t childrenCnt = container->childrenCount();
-    size_t childIndex = 0;
+	size_t childrenCnt = container->childrenCount();
+	size_t childIndex  = 0;
 
-    for (int i=0; i<numVer; ++i) {
+	for (int i = 0; i < numVer; ++i) {
 
-        TSize curX = geometry.x;
+		TSize curX = geometry.x;
 
-        for (int j=0; j<numHor; ++j) {
+		for (int j = 0; j < numHor; ++j) {
 
-            if (childIndex == childrenCnt) {
-                goto exit;
-            }
+			if (childIndex == childrenCnt) {
+				goto exit;
+			}
 
-            auto widget = container->childAt(childIndex);
-            widget->geometry(Rectangle<int>{curX, curY, stepHor, stepVer});
+			auto widget = container->childAt(childIndex);
+			widget->geometry(Rectangle<int> { curX, curY, stepHor, stepVer });
 
-            ++childIndex;
-            curX += stepHor + paddingHor;
-        }
+			++childIndex;
+			curX += stepHor + paddingHor;
+		}
 
-        curY += stepVer + paddingVer;
-    }
+		curY += stepVer + paddingVer;
+	}
 
-    exit: ;
+exit:
+	;
 }
 
 } /* namespace maligui */
