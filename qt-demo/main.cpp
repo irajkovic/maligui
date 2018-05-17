@@ -129,7 +129,16 @@ int main (int argc, char *argv[])
 		button->text(label);
 		button->backgroundColor(QColor("#555555"));
 		button->foregroundColor(QColor("#CCCCCC"));
+
+		// Attach button handler
 		button->onClickHandler(numpadBtnClickHandler);
+
+		// Same interface also allows attaching lambdas or object methods.
+		button->onClickHandler([](auto *wdg, auto point) {
+			(void) wdg;
+			qDebug("I'm clicked at %d, %d", point.x, point.y);
+		});
+
 		button->setFont("Consolas", 18);
 		numpad->addChild(std::move(button));
 	}

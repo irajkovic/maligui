@@ -5,6 +5,7 @@
 
 #include "Painter.hpp"
 #include "Rectangle.hpp"
+#include "EventDispatcher.hpp"
 
 namespace maligui
 {
@@ -101,15 +102,19 @@ public:
 
 	virtual bool onClick (const Point<TSize> &p)
 	{
-		if (mClickHandler) {
-			return mClickHandler(this, p);
-		}
+                // TODO :: Since click dispatcher potentially calls a number of
+                // event handlers, we don't have a single return value, so we
+                // can't decide whether to keep event propagation or not.
+                // TODO :: Add a separate method to switch event propagation
+                // on/off.
+		mClickDispatcher.dispatch(this, p);
 		return true;
 	}
 
-	virtual void onClickHandler (EventHandler handler)
+	template<typename ... PARAMS>
+	void onClickHandler (PARAMS ... params)
 	{
-		mClickHandler = handler;
+		mClickDispatcher.attach(std::forward<PARAMS>(params) ...);
 	}
 
 	virtual void initPainter (std::shared_ptr<Device<TPixel, TSize>> device)
@@ -117,6 +122,7 @@ public:
 		// Each widget has it's own painter, so it can change the painter
 		// properties without affecting other widgets.
 		mPainter = std::make_unique<Painter<TPixel>>(device, geometry());
+
 		// Let child widgets create their own painter objects.
 		for (auto &child : mChildren) {
 			child->initPainter(device);
@@ -152,6 +158,13 @@ protected:
 	Rectangle<TSize> mGeometry;
 	std::unique_ptr<Painter<TPixel>> mPainter;
 	std::vector<std::unique_ptr<Widget>> mChildren;
+
+	/**
+	 * ClickDispatcher object will hold a list of onClick event receivers.
+	 * The receiver is any registered method or stand alone function which
+	 * accepts the Widget pointer and the Point object.
+	 */
+	EventDispatcher<Widget<TPixel, TSize> *, Point<TSize>> mClickDispatcher;
 
 };
 
